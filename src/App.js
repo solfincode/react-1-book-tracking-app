@@ -2,10 +2,11 @@ import React from "react";
 import { Route, Switch, Link } from "react-router-dom";
 import * as BooksAPI from "./util/BooksAPI";
 import "./App.css";
-//components
 
+//components
 import OpenSearch from "./Components/OpenSearch";
 import BookShelf from "./Components/BookShelf";
+import Book from "./Components/BookShelf";
 
 class BooksApp extends React.Component {
   state = {
@@ -18,37 +19,98 @@ class BooksApp extends React.Component {
     currentReading: [],
     wantToRead: [],
     read: [],
+    query: "",
+    searchResults: [],
+    shelf: "",
     // showSearchPage: false,
   };
 
   componentDidMount() {
-    BooksAPI.getAll().then((data) =>
-      data.map((book) => {
-        if (book.shelf === "currentlyReading") {
-          this.setState((curState) => ({
-            currentReading: [...curState.currentReading, book],
-          }));
-        } else if (book.shelf === "wantToRead") {
-          this.setState((curState) => ({
-            wantToRead: [...curState.wantToRead, book],
-          }));
-        } else {
-          this.setState((curState) => ({
-            read: [...curState.read, book],
-          }));
-        }
-        return true;
-      })
-    );
+    BooksAPI.getAll()
+      .then((data) =>
+        data.map((book) => {
+          if (book.shelf === "currentlyReading") {
+            this.setState((curState) => ({
+              currentReading: [...curState.currentReading, book],
+            }));
+          } else if (book.shelf === "wantToRead") {
+            this.setState((curState) => ({
+              wantToRead: [...curState.wantToRead, book],
+            }));
+          } else {
+            this.setState((curState) => ({
+              read: [...curState.read, book],
+            }));
+          }
+          return true;
+        })
+      )
+      .catch((err) => console.log(err));
   }
-  moveToHandler = (book, shelf) => {
-    BooksAPI.update(book, shelf).then((book) => console.log(book));
+  moveToShelf = (book, shelf) => {
+    BooksAPI.update(book, shelf).then((books) => {
+      // target shelf is currentlyReading
+      if (shelf === "currentlyReading") {
+        book.shelf = "currentlyReading";
+        // setState for current reading
+        this.setState((curState) => ({
+          currentReading: [...curState.currentReading, book],
+        }));
+        // setState for want to read
+        this.setState((curState) => ({
+          wantToRead: curState.wantToRead.filter((b) => {
+            return b.id !== book.id;
+          }),
+        }));
+        // setState for read
+        this.setState((curState) => ({
+          read: curState.read.filter((b) => {
+            return b.id !== book.id;
+          }),
+        }));
+      } else if (shelf === "wantToRead") {
+        book.shelf = "wantToRead";
+        // setState for current reading
+        this.setState((curState) => ({
+          currentReading: curState.currentReading.filter((b) => {
+            return b.id !== book.id;
+          }),
+        }));
+        // setState for want to read
+        this.setState((curState) => ({
+          wantToRead: [...curState.wantToRead, book],
+        }));
+        // setState for read
+        this.setState((curState) => ({
+          read: curState.read.filter((b) => {
+            return b.id !== book.id;
+          }),
+        }));
+      } else {
+        book.shelf = "read";
+        this.setState((curState) => ({
+          currentReading: curState.currentReading.filter((b) => {
+            return b.id !== book.id;
+          }),
+        }));
+        this.setState((curState) => ({
+          wantToRead: curState.wantToRead.filter((b) => {
+            return b.id !== book.id;
+          }),
+        }));
+
+        this.setState((curState) => ({
+          read: [...curState.read, book],
+        }));
+      }
+    });
   };
 
   render() {
     return (
       <div className="app">
         <Switch>
+          {/* search route */}
           <Route
             exact
             path="/search"
@@ -73,12 +135,24 @@ class BooksApp extends React.Component {
                   </div>
                 </div>
                 <div className="search-books-results">
-                  <ol className="books-grid"></ol>
+                  <ol className="books-grid">
+                    {this.state.searchResults.map((book) => (
+                      <li key={book.id}>
+                        <Book
+                          book={book}
+                          title={book.title}
+                          author={book.authors}
+                          img={book.imageLinks.thumbnail}
+                          shelf={book.shelf}
+                        />
+                      </li>
+                    ))}
+                  </ol>
                 </div>
               </div>
             )}
           />
-
+          {/* index route */}
           <Route
             exact
             path="/"
@@ -93,16 +167,19 @@ class BooksApp extends React.Component {
                     <BookShelf
                       bookData={this.state.currentReading}
                       bookShelfName="Currently Reading"
+                      moveToShelf={this.moveToShelf}
                     />
                     {/* want to read section */}
                     <BookShelf
                       bookData={this.state.wantToRead}
                       bookShelfName="Want to Read"
+                      moveToShelf={this.moveToShelf}
                     />
                     {/* read section */}
                     <BookShelf
                       bookData={this.state.read}
                       bookShelfName="Read"
+                      moveToShelf={this.moveToShelf}
                     />
                   </div>
                 </div>

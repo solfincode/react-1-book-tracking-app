@@ -11,11 +11,12 @@ class BookShelf extends Component {
             {this.props.bookData.map((book) => (
               <li key={book.id}>
                 <Book
+                  book={book}
                   title={book.title}
-                  author={book.authors[0]}
+                  author={book.authors}
                   img={book.imageLinks.thumbnail}
                   shelf={book.shelf}
-                  moveToHandler={this.moveToHandler}
+                  moveToShelf={this.props.moveToShelf}
                 />
               </li>
             ))}
