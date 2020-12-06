@@ -19,9 +19,8 @@ class BooksApp extends React.Component {
     currentReading: [],
     wantToRead: [],
     read: [],
-    query: "",
+    query: [],
     searchResults: [],
-    shelf: "",
     // showSearchPage: false,
   };
 
@@ -106,6 +105,17 @@ class BooksApp extends React.Component {
     });
   };
 
+  searchHandler = (e) => {
+    this.setState({ query: e.target.value });
+    const query = e.target.value;
+    if (query.length > 0) {
+      BooksAPI.search(query)
+        .then((books) => this.setState({ searchResults: books }))
+        .then(() => console.log(this.state.searchResults))
+        .catch((err) => console.log(err));
+    }
+  };
+
   render() {
     return (
       <div className="app">
@@ -131,6 +141,8 @@ class BooksApp extends React.Component {
                     <input
                       type="text"
                       placeholder="Search by title or author"
+                      value={this.state.query}
+                      onChange={this.searchHandler}
                     />
                   </div>
                 </div>
