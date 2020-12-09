@@ -13,7 +13,7 @@ class BookShelf extends Component {
                 <Book
                   book={book}
                   title={book.title}
-                  author={book.authors}
+                  authors={book.authors}
                   img={book.imageLinks.thumbnail}
                   shelf={book.shelf}
                   moveToShelf={this.props.moveToShelf}

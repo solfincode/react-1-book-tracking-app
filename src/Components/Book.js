@@ -1,10 +1,6 @@
 import React, { Component } from "react";
 
 class Book extends Component {
-  componentDidMount() {
-    this.setState({ shelf: this.props.shelf });
-  }
-
   //handler
   handleChange = (e) => {
     const shelf = e.target.value;
@@ -41,7 +37,7 @@ class Book extends Component {
           </div>
         </div>
         <div className="book-title">{this.props.title}</div>
-        <div className="book-authors">{this.props.author}</div>
+        <div className="book-authors">{this.props.authors}</div>
       </div>
     );
   }

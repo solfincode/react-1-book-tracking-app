@@ -6,7 +6,7 @@ import "./App.css";
 //components
 import OpenSearch from "./Components/OpenSearch";
 import BookShelf from "./Components/BookShelf";
-import Book from "./Components/BookShelf";
+import Book from "./Components/Book";
 
 class BooksApp extends React.Component {
   state = {
@@ -21,7 +21,6 @@ class BooksApp extends React.Component {
     read: [],
     query: [],
     searchResults: [],
-    // showSearchPage: false,
   };
 
   componentDidMount() {
@@ -108,12 +107,15 @@ class BooksApp extends React.Component {
   searchHandler = (e) => {
     this.setState({ query: e.target.value });
     const query = e.target.value;
-    if (query.length > 0) {
-      BooksAPI.search(query)
-        .then((books) => this.setState({ searchResults: books }))
-        .then(() => console.log(this.state.searchResults))
-        .catch((err) => console.log(err));
-    }
+    BooksAPI.search(query.trim())
+      .then((books) => {
+        if (query.trim().length > 0) {
+          this.setState({ searchResults: books });
+        } else {
+          this.setState({ searchResults: [] });
+        }
+      })
+      .catch((err) => console.log(err));
   };
 
   render() {
@@ -153,9 +155,10 @@ class BooksApp extends React.Component {
                         <Book
                           book={book}
                           title={book.title}
-                          author={book.authors}
+                          authors={book.authors}
                           img={book.imageLinks.thumbnail}
                           shelf={book.shelf}
+                          moveToShelf={this.moveToShelf}
                         />
                       </li>
                     ))}
