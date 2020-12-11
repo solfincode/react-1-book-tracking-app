@@ -41,7 +41,15 @@ function SearchPage(props) {
                 />
               </li>
             ) : (
-              <li key={book.id}>no result</li>
+              <li key={book.id}>
+                <Book
+                  book={book}
+                  title={book.title}
+                  authors={book.authors}
+                  shelf={book.shelf}
+                  moveToShelf={props.moveToShelf}
+                />
+              </li>
             )
           )}
         </ol>
