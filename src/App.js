@@ -12,7 +12,7 @@ class BooksApp extends React.Component {
     currentReading: [],
     wantToRead: [],
     read: [],
-    query: [],
+    query: "",
     searchResults: [],
   };
 
@@ -110,20 +110,24 @@ class BooksApp extends React.Component {
     if (query.trim().length > 0) {
       BooksAPI.search(query.trim())
         .then((books) => {
-          books.map((el) => {
-            el.shelf = "none";
-            this.state.currentReading.map((shelfBook) =>
-              el.id === shelfBook.id ? (el.shelf = "currentlyReading") : ""
-            );
-            this.state.wantToRead.map((shelfBook) =>
-              el.id === shelfBook.id ? (el.shelf = "wantToRead") : ""
-            );
-            this.state.read.map((shelfBook) =>
-              el.id === shelfBook.id ? (el.shelf = "read") : ""
-            );
-            return true;
-          });
-          this.setState({ searchResults: books });
+          if (books.error === "empty query") {
+            this.setState({ searchResults: [] });
+          } else {
+            books.map((el) => {
+              el.shelf = "none";
+              this.state.currentReading.map((shelfBook) =>
+                el.id === shelfBook.id ? (el.shelf = "currentlyReading") : ""
+              );
+              this.state.wantToRead.map((shelfBook) =>
+                el.id === shelfBook.id ? (el.shelf = "wantToRead") : ""
+              );
+              this.state.read.map((shelfBook) =>
+                el.id === shelfBook.id ? (el.shelf = "read") : ""
+              );
+              return true;
+            });
+            this.setState({ searchResults: books });
+          }
         })
         .catch((err) => console.log(err));
     } else {
@@ -136,31 +140,23 @@ class BooksApp extends React.Component {
       <div className="app">
         <Switch>
           {/* search route */}
-          <Route
-            exact
-            path="/search"
-            render={({ history }) => (
-              <SearchPage
-                searchHandler={this.searchHandler}
-                query={this.state.query}
-                searchResults={this.state.searchResults}
-                moveToShelf={this.moveToShelf}
-              />
-            )}
-          />
+          <Route exact path="/search">
+            <SearchPage
+              searchHandler={this.searchHandler}
+              query={this.state.query}
+              searchResults={this.state.searchResults}
+              moveToShelf={this.moveToShelf}
+            />
+          </Route>
           {/* index route */}
-          <Route
-            exact
-            path="/"
-            render={() => (
-              <HomePage
-                currentReading={this.state.currentReading}
-                wantToRead={this.state.wantToRead}
-                read={this.state.read}
-                moveToShelf={this.moveToShelf}
-              />
-            )}
-          />
+          <Route exact path="/">
+            <HomePage
+              currentReading={this.state.currentReading}
+              wantToRead={this.state.wantToRead}
+              read={this.state.read}
+              moveToShelf={this.moveToShelf}
+            />
+          </Route>
         </Switch>
       </div>
     );

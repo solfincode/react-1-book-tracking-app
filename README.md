@@ -8,3 +8,7 @@
 ## 2.Installation
 
 once you git clone with this repo, you can install all of the node module via "npm install" dependency list that will be installed on the package.json file.
+
+## 3.Step to Start Project
+
+You run "npm install" on root folder of this project. It will start project within "http://localhost:3000"
