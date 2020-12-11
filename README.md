@@ -8,4 +8,6 @@
 - integreate API
   mostly API URL should be in .env file but this is learning and demo-purposed project. So i don't use .env file for API URL
 
-## 2.Live Demo Link
+## 2.Installation
+
+once you git clone with this repo, you can install all of the node module via "npm install" dependency list that will be installed on the package.json file.
