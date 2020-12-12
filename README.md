@@ -11,7 +11,7 @@ Here are some steps to launch this project
 
 1. git clone https://github.com/solfincode/react-1-book-tracking-app.git
 2. npm install on root folder of this project
-3. It will start project on "http://localhost:3000"
+3. "npm start" on terminal and It will start project on "http://localhost:3000"
 4. main home page is your bookshelf "currently Reading","want to read" and "read" shelves
 5. You could change shelf for those books by clicking green button
 6. bottom of right on your browser, you can search all of book from search API
